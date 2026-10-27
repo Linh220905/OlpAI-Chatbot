@@ -74,6 +74,10 @@ describe('provider module', () => {
     const parsedDone = parseSSEChunk(doneLine);
     assert.equal(parsedDone.done, true);
 
+    const errorLine = 'data: {"error":{"code":502,"message":"Limit reached"}}';
+    const parsedError = parseSSEChunk(errorLine);
+    assert.equal(parsedError.error, 'Limit reached');
+
     const empty = parseSSEChunk(': keep-alive');
     assert.equal(empty.content, '');
   });

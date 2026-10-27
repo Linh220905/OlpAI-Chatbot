@@ -100,6 +100,10 @@ export function createApp(customConfig) {
       'X-Accel-Buffering': 'no'
     });
 
+    if (typeof res.flushHeaders === 'function') {
+      res.flushHeaders();
+    }
+
     const abortController = new AbortController();
 
     // Hủy request nếu client ngắt kết nối giữa chừng

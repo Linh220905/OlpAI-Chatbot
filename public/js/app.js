@@ -16,8 +16,7 @@ class OLPAiApp {
     this.availableModels = [];
     this.selectedModel = localStorage.getItem(SELECTED_MODEL_KEY) || 'gpt-4o-mini';
     this.currentTheme = localStorage.getItem(THEME_KEY) || 'light';
-    this.isStreaming = false;
-    this.abortController = null;
+    this.activeControllers = new Set();
     this.templates = [];
 
     this.cacheDom();
@@ -188,7 +187,7 @@ class OLPAiApp {
 
   updateSendButtonState() {
     const hasText = Boolean(this.dom.chatTextarea.value.trim());
-    this.dom.btnSend.disabled = !hasText || this.isStreaming;
+    this.dom.btnSend.disabled = !hasText;
   }
 
   // Quản lý Models & Provider
@@ -412,19 +411,20 @@ class OLPAiApp {
     } else {
       this.dom.welcomeScreen.style.display = 'none';
       for (const msg of chat.messages) {
-        this.appendMessageToDom(msg.role, msg.content, msg.reasoning);
+        this.appendMessageToDom(msg.role, msg.content, msg.reasoning, msg.model || chat.model);
       }
       this.scrollToBottom();
     }
   }
 
-  appendMessageToDom(role, content, reasoning) {
+  appendMessageToDom(role, content, reasoning, modelName) {
     const row = document.createElement('div');
     row.className = `message-row ${role === 'user' ? 'user-row' : 'assistant-row'}`;
 
     const isUser = role === 'user';
     const avatar = isUser ? 'BẠN' : 'OLP';
-    const authorName = isUser ? 'Bạn' : `OLPAi (${this.selectedModel})`;
+    const displayedModel = modelName || this.selectedModel;
+    const authorName = isUser ? 'Bạn' : `OLPAi (${displayedModel})`;
 
     let reasoningHtml = '';
     if (reasoning) {
@@ -472,21 +472,26 @@ class OLPAiApp {
   }
 
   stopStreaming() {
-    if (this.abortController) {
-      this.abortController.abort();
+    for (const controller of this.activeControllers) {
+      try {
+        controller.abort();
+      } catch {
+        // ignore
+      }
     }
-    this.isStreaming = false;
+    this.activeControllers.clear();
     this.dom.btnStop.classList.remove('visible');
-    this.dom.btnSend.style.display = 'flex';
     this.updateSendButtonState();
   }
 
   async handleSendMessage() {
     const rawText = this.dom.chatTextarea.value.trim();
-    if (!rawText || this.isStreaming) return;
+    if (!rawText) return;
 
     const chat = this.getCurrentChat();
     if (!chat) return;
+
+    const targetModel = this.selectedModel;
 
     // Ẩn welcome screen
     this.dom.welcomeScreen.style.display = 'none';
@@ -507,18 +512,18 @@ class OLPAiApp {
     this.appendMessageToDom('user', rawText);
     this.dom.chatTextarea.value = '';
     this.autoGrowTextarea();
+    this.updateSendButtonState();
     this.scrollToBottom();
 
-    // Tạo placeholder assistant message
-    const assistantRow = this.appendMessageToDom('assistant', '');
+    // Tạo placeholder assistant message với đúng tên model
+    const assistantRow = this.appendMessageToDom('assistant', '', '', targetModel);
     const contentEl = assistantRow.querySelector('.message-content');
     contentEl.innerHTML = '<span class="streaming-cursor"></span>';
 
-    this.isStreaming = true;
-    this.dom.btnSend.style.display = 'none';
+    // Tạo controller riêng cho stream này (cho phép chạy song song)
+    const streamController = new AbortController();
+    this.activeControllers.add(streamController);
     this.dom.btnStop.classList.add('visible');
-
-    this.abortController = new AbortController();
 
     let accumulatedContent = '';
     let accumulatedReasoning = '';
@@ -529,9 +534,9 @@ class OLPAiApp {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: chat.messages,
-          model: this.selectedModel
+          model: targetModel
         }),
-        signal: this.abortController.signal
+        signal: streamController.signal
       });
 
       if (!response.ok) {
@@ -580,8 +585,17 @@ class OLPAiApp {
         }
       }
 
-      // Hoàn tất stream
-      contentEl.innerHTML = renderMarkdown(accumulatedContent);
+      // Hoàn tất stream - kiểm tra nếu trống rỗng
+      if (!accumulatedContent.trim() && !accumulatedReasoning.trim()) {
+        contentEl.innerHTML = `
+          <div style="color:var(--accent-amber);background:rgba(217,119,6,0.1);border:1px solid var(--accent-amber);padding:10px 14px;border-radius:var(--radius-md);">
+            ⚠️ <strong>Không nhận được dữ liệu:</strong> Model <code>${escapeHtml(targetModel)}</code> không trả về nội dung (có thể do quá tải lượt gọi hoặc model miễn phí đạt giới hạn concurrency).
+            <br><small style="color:var(--text-muted);display:inline-block;margin-top:4px;">Gợi ý: Hãy chọn model khác từ danh sách như <code>ag/gemini-3.8-flash-high</code> hoặc <code>ag/gemini-3.7-flash-high</code> để tiếp tục.</small>
+          </div>
+        `;
+      } else {
+        contentEl.innerHTML = renderMarkdown(accumulatedContent);
+      }
 
       // Thêm reasoning box nếu có
       if (accumulatedReasoning) {
@@ -594,35 +608,42 @@ class OLPAiApp {
             <div class="reasoning-body">${escapeHtml(accumulatedReasoning)}</div>
           </div>
         `;
-        const bodyEl = assistantRow.querySelector('.message-body');
         const headerEl = assistantRow.querySelector('.message-header');
         headerEl.insertAdjacentHTML('afterend', reasoningHtml);
       }
 
-      chat.messages.push({
-        role: 'assistant',
-        content: accumulatedContent,
-        reasoning: accumulatedReasoning
-      });
-      chat.updatedAt = Date.now();
-      this.saveChatsToStorage();
+      if (accumulatedContent.trim()) {
+        chat.messages.push({
+          role: 'assistant',
+          content: accumulatedContent,
+          reasoning: accumulatedReasoning,
+          model: targetModel
+        });
+        chat.updatedAt = Date.now();
+        this.saveChatsToStorage();
+      }
 
     } catch (err) {
-      if (this.abortController.signal.aborted) {
-        contentEl.innerHTML = renderMarkdown(accumulatedContent) + ' <em>(Đã dừng)</em>';
+      if (streamController.signal.aborted) {
+        contentEl.innerHTML = (accumulatedContent ? renderMarkdown(accumulatedContent) : '') + ' <em>(Đã dừng)</em>';
       } else {
         const errMsg = err instanceof Error ? err.message : 'Đã xảy ra lỗi không xác định';
         contentEl.innerHTML = `
           <div style="color:var(--accent-red);background:rgba(239,68,68,0.1);border:1px solid var(--accent-red);padding:10px 14px;border-radius:var(--radius-md);">
-            <strong>Lỗi phản hồi:</strong> ${escapeHtml(errMsg)}
-            <br><small style="color:var(--text-muted);">Vui lòng kiểm tra lại cấu hình PROVIDER_API_KEY và PROVIDER_BASE_URL trong file .env.</small>
+            <strong>Lỗi phản hồi (${escapeHtml(targetModel)}):</strong> ${escapeHtml(errMsg)}
+            <br><small style="color:var(--text-muted);display:inline-block;margin-top:4px;">Gợi ý: Thử đổi sang model khác (như <code>ag/gemini-3.8-flash-high</code>) hoặc kiểm tra lại kết nối.</small>
           </div>
         `;
       }
     } finally {
-      this.stopStreaming();
+      this.activeControllers.delete(streamController);
+      if (this.activeControllers.size === 0) {
+        this.dom.btnStop.classList.remove('visible');
+      }
+      this.updateSendButtonState();
       this.scrollToBottom();
     }
+  }
   }
 }
 

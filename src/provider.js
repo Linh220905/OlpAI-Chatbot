@@ -3,6 +3,7 @@
  * @property {boolean} done
  * @property {string} content
  * @property {string} reasoning
+ * @property {string} [error]
  */
 
 /**
@@ -26,6 +27,14 @@ export function parseSSEChunk(rawLine) {
 
     try {
       const data = JSON.parse(payload);
+
+      if (data.error) {
+        const errMsg = typeof data.error === 'object'
+          ? (data.error.message || JSON.stringify(data.error))
+          : String(data.error);
+        return { done: false, content: '', reasoning: '', error: errMsg };
+      }
+
       const choice = data.choices && data.choices[0];
       if (!choice) {
         return { done: false, content: '', reasoning: '' };
@@ -124,6 +133,9 @@ export async function streamChatCompletion({
 
     for (const line of lines) {
       const parsed = parseSSEChunk(line);
+      if (parsed.error) {
+        throw new Error(parsed.error);
+      }
       if (parsed.done) {
         return;
       }
@@ -138,6 +150,9 @@ export async function streamChatCompletion({
 
   if (buffer.trim()) {
     const parsed = parseSSEChunk(buffer);
+    if (parsed.error) {
+      throw new Error(parsed.error);
+    }
     if (!parsed.done && (parsed.content || parsed.reasoning)) {
       onChunk({
         content: parsed.content,
