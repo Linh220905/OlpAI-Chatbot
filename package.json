@@ -1,0 +1,20 @@
+{
+  "name": "env_olp",
+  "version": "1.0.0",
+  "description": "Môi trường luyện thi OLPAi - Web coding assistant",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "keywords": ["olp", "competitive-programming", "ai", "chatgpt"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
