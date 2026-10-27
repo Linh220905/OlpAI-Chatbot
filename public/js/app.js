@@ -7,6 +7,7 @@ import { configureMarked, renderMarkdown, initCodeCopyHandler, escapeHtml } from
 // LocalStorage key
 const STORAGE_KEY = 'olpai_chat_history_v1';
 const SELECTED_MODEL_KEY = 'olpai_selected_model_v1';
+const THEME_KEY = 'olpai_theme_mode_v1';
 
 class OLPAiApp {
   constructor() {
@@ -14,6 +15,7 @@ class OLPAiApp {
     this.currentChatId = null;
     this.availableModels = [];
     this.selectedModel = localStorage.getItem(SELECTED_MODEL_KEY) || 'gpt-4o-mini';
+    this.currentTheme = localStorage.getItem(THEME_KEY) || 'light';
     this.isStreaming = false;
     this.abortController = null;
     this.templates = [];
@@ -30,6 +32,8 @@ class OLPAiApp {
       chatHistoryList: document.getElementById('chatHistoryList'),
       providerStatusDot: document.getElementById('providerStatusDot'),
       providerStatusText: document.getElementById('providerStatusText'),
+      btnThemeToggle: document.getElementById('btnThemeToggle'),
+      themeIcon: document.getElementById('themeIcon'),
 
       modelSelectorBtn: document.getElementById('modelSelectorBtn'),
       currentModelLabel: document.getElementById('currentModelLabel'),
@@ -50,6 +54,14 @@ class OLPAiApp {
   }
 
   bindEvents() {
+    // Áp dụng theme (mặc định Sáng)
+    this.applyTheme(this.currentTheme);
+    if (this.dom.btnThemeToggle) {
+      this.dom.btnThemeToggle.addEventListener('click', () => {
+        this.toggleTheme();
+      });
+    }
+
     // Khởi tạo marked & copy handler
     configureMarked();
     initCodeCopyHandler();
@@ -109,6 +121,50 @@ class OLPAiApp {
     this.dom.btnStop.addEventListener('click', () => {
       this.stopStreaming();
     });
+  }
+
+  applyTheme(theme) {
+    this.currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', theme === 'dark' ? '#0d0f12' : '#ffffff');
+    }
+
+    if (this.dom.themeIcon) {
+      if (theme === 'dark') {
+        // Biểu tượng mặt trời (bấm để chuyển sang sáng)
+        this.dom.themeIcon.innerHTML = `
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        `;
+        if (this.dom.btnThemeToggle) {
+          this.dom.btnThemeToggle.setAttribute('title', 'Chuyển sang chế độ Sáng');
+        }
+      } else {
+        // Biểu tượng mặt trăng (bấm để chuyển sang tối)
+        this.dom.themeIcon.innerHTML = `
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        `;
+        if (this.dom.btnThemeToggle) {
+          this.dom.btnThemeToggle.setAttribute('title', 'Chuyển sang chế độ Tối');
+        }
+      }
+    }
+  }
+
+  toggleTheme() {
+    const nextTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+    this.applyTheme(nextTheme);
   }
 
   async init() {

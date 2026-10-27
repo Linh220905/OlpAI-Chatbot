@@ -1,14 +1,58 @@
 /* ==========================================================
    MÔI TRƯỜNG LUYỆN THI OLPAi - STYLESHEET
-   Dark minimalist theme inspired by Cursor, Claude & LeetCode
+   Giao diện sáng (Light theme) tối giản & chuyên nghiệp
    ========================================================== */
 
 :root {
+  --theme: 'light';
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-code-header: #f8fafc;
+  --bg-code-body: #0d1117;
+  --bg-input: #ffffff;
+  --bg-hover: #e2e8f0;
+
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-accent: #2563eb;
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-code: #f1f5f9;
+
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #1d4ed8;
+  --accent-cyan: #0284c7;
+  --accent-green: #059669;
+  --accent-amber: #d97706;
+  --accent-red: #dc2626;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, Consolas, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  --sidebar-width: 280px;
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --transition-fast: 150ms ease;
+  --transition-normal: 220ms ease;
+}
+
+:root[data-theme="dark"] {
+  --theme: 'dark';
   --bg-primary: #0d0f12;
   --bg-secondary: #13171d;
   --bg-tertiary: #1a2029;
   --bg-card: #151a22;
   --bg-code-header: #1c222d;
+  --bg-code-body: #0b0e14;
   --bg-input: #171c24;
   --bg-hover: #222936;
 
@@ -28,19 +72,8 @@
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, Consolas, monospace;
-
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-full: 9999px;
-
-  --sidebar-width: 280px;
   --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.35);
   --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.25);
-  --transition-fast: 150ms ease;
-  --transition-normal: 220ms ease;
 }
 
 *, *::before, *::after {
@@ -104,7 +137,7 @@ body {
 .brand-icon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  background: linear-gradient(135deg, #2563eb, #0284c7);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -112,7 +145,7 @@ body {
   color: #fff;
   font-weight: 700;
   font-size: 16px;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
 }
 
 .brand-title {
@@ -127,7 +160,7 @@ body {
   font-size: 9.5px;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--accent-cyan);
+  color: var(--accent-blue);
   letter-spacing: 0.8px;
 }
 
@@ -214,6 +247,7 @@ body {
 .history-item.active {
   border-left: 2px solid var(--accent-blue);
   padding-left: 8px;
+  font-weight: 500;
 }
 
 .history-item-title {
@@ -299,7 +333,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background-color: rgba(19, 23, 29, 0.85);
+  background-color: var(--bg-secondary);
   backdrop-filter: blur(12px);
   z-index: 20;
 }
@@ -395,7 +429,7 @@ body {
 .model-option.active {
   color: var(--accent-blue);
   font-weight: 600;
-  background-color: rgba(59, 130, 246, 0.08);
+  background-color: rgba(37, 99, 235, 0.08);
 }
 
 .model-custom-input-wrapper {
@@ -466,9 +500,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(59, 130, 246, 0.12);
-  border: 1px solid rgba(59, 130, 246, 0.28);
-  color: #93c5fd;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  color: var(--accent-blue);
   font-size: 11px;
   font-weight: 600;
   padding: 4px 10px;
@@ -482,9 +516,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.8px;
   margin-bottom: 8px;
-  background: linear-gradient(180deg, #ffffff 30%, #9aa5b5 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
 }
 
 .welcome-desc {
@@ -509,12 +541,14 @@ body {
   padding: 14px;
   cursor: pointer;
   transition: all var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .template-card:hover {
   background: var(--bg-tertiary);
   border-color: var(--border-strong);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
 }
 
 .template-card-category {
@@ -574,9 +608,9 @@ body {
 }
 
 .avatar-assistant {
-  background: linear-gradient(135deg, #1d4ed8, #0e7490);
+  background: linear-gradient(135deg, #2563eb, #0284c7);
   color: #fff;
-  box-shadow: 0 0 10px rgba(14, 116, 144, 0.3);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.25);
 }
 
 .message-body {
@@ -617,11 +651,12 @@ body {
   color: var(--text-primary);
   display: inline-block;
   white-space: pre-wrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 /* Thinking / Reasoning Accordion */
 .reasoning-box {
-  background: rgba(19, 23, 29, 0.6);
+  background: var(--bg-secondary);
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-md);
   margin-bottom: 14px;
@@ -635,7 +670,7 @@ body {
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -646,7 +681,7 @@ body {
 
 .reasoning-body {
   padding: 12px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 12px;
   white-space: pre-wrap;
@@ -684,7 +719,7 @@ body {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
-  color: #93c5fd;
+  color: var(--accent-blue);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -700,7 +735,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
@@ -711,7 +746,7 @@ body {
 }
 
 .copy-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
   border-color: var(--border-strong);
 }
@@ -729,7 +764,8 @@ body {
   font-family: var(--font-mono);
   font-size: 13.5px;
   line-height: 1.55;
-  background-color: #0b0e14;
+  background-color: var(--bg-code-body);
+  color: var(--text-code);
 }
 
 .code-card-body pre {
@@ -752,7 +788,7 @@ body {
 .message-content h4 {
   margin: 18px 0 8px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: -0.3px;
 }
 
@@ -780,11 +816,11 @@ body {
 .message-content code:not(pre code) {
   font-family: var(--font-mono);
   font-size: 12.5px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
   padding: 2px 5px;
   border-radius: 4px;
-  color: #38bdf8;
+  color: var(--accent-blue);
 }
 
 .message-content blockquote {
@@ -821,7 +857,7 @@ body {
   left: 0;
   right: 0;
   padding: 16px 20px 20px;
-  background: linear-gradient(180deg, rgba(13, 15, 18, 0) 0%, rgba(13, 15, 18, 0.95) 30%, rgba(13, 15, 18, 1) 100%);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, var(--bg-primary) 35%, var(--bg-primary) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -834,7 +870,7 @@ body {
   background: var(--bg-input);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   padding: 10px 14px;
   display: flex;
   flex-direction: column;
@@ -844,7 +880,7 @@ body {
 
 .input-container:focus-within {
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 1px var(--accent-blue), 0 6px 30px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 1px var(--accent-blue), 0 6px 20px rgba(37, 99, 235, 0.12);
 }
 
 .chat-textarea {
