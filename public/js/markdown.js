@@ -91,15 +91,13 @@ export function buildCodeCardHtml(codeRaw, lang) {
 <div class="code-card">
   <div class="code-card-header">
     <div class="code-card-lang">
-      <span class="lang-icon"></span>
-      <span class="lang-text">${escapeHtml(normalizedLang.toUpperCase())}</span>
+      <span class="lang-text">${escapeHtml(normalizedLang.toLowerCase())}</span>
     </div>
     <button class="copy-btn" data-code="${encodedCode}" title="Sao chép toàn bộ mã nguồn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
       </svg>
-      <span>Copy code</span>
     </button>
   </div>
   <div class="code-card-body">
@@ -128,6 +126,20 @@ export function configureMarked() {
 }
 
 /**
+ * Lọc bỏ hoàn toàn các thẻ <think>...</think> hoặc suy luận còn sót lại
+ * @param {string} text
+ * @returns {string}
+ */
+export function stripThinking(text) {
+  if (!text || typeof text !== 'string') return '';
+  return text
+    .replace(/<think>[\s\S]*?<\/think>/gi, '')
+    .replace(/^<think>[\s\S]*$/gi, '')
+    .replace(/^[\s\S]*?<\/think>/gi, '')
+    .trimStart();
+}
+
+/**
  * Render chuỗi Markdown + KaTeX sang HTML hoàn chỉnh
  * @param {string} markdownText
  * @returns {string}
@@ -135,7 +147,10 @@ export function configureMarked() {
 export function renderMarkdown(markdownText) {
   if (!markdownText) return '';
 
-  const withMath = renderMath(markdownText);
+  const cleanText = stripThinking(markdownText);
+  if (!cleanText) return '';
+
+  const withMath = renderMath(cleanText);
 
   if (typeof window !== 'undefined' && typeof window.marked !== 'undefined') {
     try {
@@ -166,16 +181,15 @@ export function initCodeCopyHandler() {
       const originalHtml = btn.innerHTML;
       btn.classList.add('copied');
       btn.innerHTML = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-        <span>Copied!</span>
       `;
 
       setTimeout(() => {
         btn.classList.remove('copied');
         btn.innerHTML = originalHtml;
-      }, 2000);
+      }, 1500);
     } catch (err) {
       // Fallback nếu clipboard API bị chặn
       const textarea = document.createElement('textarea');

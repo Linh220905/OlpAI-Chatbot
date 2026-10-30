@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { escapeHtml, normalizeLanguage, buildCodeCardHtml, renderMarkdown } from '../public/js/markdown.js';
+import { escapeHtml, normalizeLanguage, buildCodeCardHtml, renderMarkdown, stripThinking } from '../public/js/markdown.js';
 
 describe('markdown and code card module', () => {
   it('escapes dangerous HTML characters', () => {
@@ -27,7 +27,7 @@ describe('markdown and code card module', () => {
     assert.ok(cardHtml.includes('class="code-card"'));
     assert.ok(cardHtml.includes('class="code-card-header"'));
     assert.ok(cardHtml.includes('class="code-card-lang"'));
-    assert.ok(cardHtml.includes('CPP'));
+    assert.ok(cardHtml.toLowerCase().includes('cpp'));
     assert.ok(cardHtml.includes('class="copy-btn"'));
     assert.ok(cardHtml.includes('data-code='));
     assert.ok(cardHtml.includes('class="code-card-body"'));
@@ -37,5 +37,19 @@ describe('markdown and code card module', () => {
   it('handles empty input in renderMarkdown gracefully', () => {
     assert.equal(renderMarkdown(''), '');
     assert.equal(renderMarkdown(null), '');
+  });
+
+  it('strips <think> tags from text via stripThinking and renderMarkdown', () => {
+    const raw = '<think>Suy nghĩ thuật toán DP</think>Kết quả là 100';
+    assert.equal(stripThinking(raw), 'Kết quả là 100');
+    assert.ok(!renderMarkdown(raw).includes('Suy nghĩ thuật toán'));
+    assert.ok(renderMarkdown(raw).includes('Kết quả là 100'));
+  });
+
+  it('strips prefilled reasoning without opening <think> tag', () => {
+    const raw = 'Okay, so I need to figure out how to respond...\n</think>\n\nTôi là Trợ lý AI của OLPAi.';
+    assert.equal(stripThinking(raw), 'Tôi là Trợ lý AI của OLPAi.');
+    assert.ok(!renderMarkdown(raw).includes('Okay, so I need'));
+    assert.ok(renderMarkdown(raw).includes('Tôi là Trợ lý AI của OLPAi.'));
   });
 });

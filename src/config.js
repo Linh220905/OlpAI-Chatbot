@@ -8,6 +8,8 @@ dotenv.config();
  * @property {string} providerApiKey
  * @property {string[]} availableModels
  * @property {string} defaultModel
+ * @property {string} chatbotControlPassword
+ * @property {string} deepseekProxyToken
  * @property {number} port
  */
 
@@ -18,6 +20,8 @@ dotenv.config();
  */
 
 const DEFAULT_FALLBACK_MODELS = [
+  'deepseek-32b',
+  'ag/gemini-3.8-flash-high',
   'gpt-4o',
   'gpt-4o-mini',
   'deepseek-chat',
@@ -60,9 +64,18 @@ function parseModels(rawModels) {
 export function parseConfig(env = {}) {
   const providerBaseUrl = cleanBaseUrl(env.PROVIDER_BASE_URL);
   const providerApiKey = typeof env.PROVIDER_API_KEY === 'string' ? env.PROVIDER_API_KEY.trim() : '';
+  const chatbotControlPassword = typeof env.CHATBOT_CONTROL_PASSWORD === 'string'
+    ? env.CHATBOT_CONTROL_PASSWORD
+    : '';
+  const deepseekBaseUrl = cleanBaseUrl(
+    env.DEEPSEEK_BASE_URL || 'https://linh220905--deepseek-32b-service-serve.us-east.modal.run/v1'
+  );
+  const deepseekProxyToken = typeof env.DEEPSEEK_MODAL_PROXY_TOKEN === 'string'
+    ? env.DEEPSEEK_MODAL_PROXY_TOKEN.trim()
+    : '';
   const availableModels = parseModels(env.AVAILABLE_MODELS);
   const defaultModelCandidate = typeof env.DEFAULT_MODEL === 'string' ? env.DEFAULT_MODEL.trim() : '';
-  const defaultModel = defaultModelCandidate || availableModels[0] || 'gpt-4o-mini';
+  const defaultModel = defaultModelCandidate || 'deepseek-32b';
 
   const rawPort = env.PORT ? Number.parseInt(env.PORT, 10) : 3000;
   const port = Number.isInteger(rawPort) && rawPort > 0 ? rawPort : 3000;
@@ -70,6 +83,9 @@ export function parseConfig(env = {}) {
   return Object.freeze({
     providerBaseUrl,
     providerApiKey,
+    deepseekBaseUrl,
+    deepseekProxyToken,
+    chatbotControlPassword,
     availableModels: Object.freeze(availableModels),
     defaultModel,
     port

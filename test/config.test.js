@@ -7,6 +7,7 @@ describe('config module', () => {
     const env = {
       PROVIDER_BASE_URL: 'https://llm.example.com/v1/',
       PROVIDER_API_KEY: 'test-key-123',
+      DEEPSEEK_MODAL_PROXY_TOKEN: 'wk-test.ws-test-secret',
       AVAILABLE_MODELS: 'model-a, model-b , model-c',
       DEFAULT_MODEL: 'model-b',
       PORT: '8080'
@@ -16,6 +17,11 @@ describe('config module', () => {
 
     assert.equal(config.providerBaseUrl, 'https://llm.example.com/v1');
     assert.equal(config.providerApiKey, 'test-key-123');
+    assert.equal(config.deepseekProxyToken, 'wk-test.ws-test-secret');
+    assert.equal(
+      config.deepseekBaseUrl,
+      'https://linh220905--deepseek-32b-service-serve.us-east.modal.run/v1'
+    );
     assert.deepEqual(config.availableModels, ['model-a', 'model-b', 'model-c']);
     assert.equal(config.defaultModel, 'model-b');
     assert.equal(config.port, 8080);
@@ -26,9 +32,14 @@ describe('config module', () => {
 
     assert.equal(config.providerBaseUrl, 'https://api.openai.com/v1');
     assert.equal(config.providerApiKey, '');
+    assert.equal(config.deepseekProxyToken, '');
+    assert.equal(
+      config.deepseekBaseUrl,
+      'https://linh220905--deepseek-32b-service-serve.us-east.modal.run/v1'
+    );
     assert.ok(Array.isArray(config.availableModels));
     assert.ok(config.availableModels.length > 0);
-    assert.equal(config.defaultModel, config.availableModels[0]);
+    assert.equal(config.defaultModel, 'deepseek-32b');
     assert.equal(config.port, 3000);
   });
 

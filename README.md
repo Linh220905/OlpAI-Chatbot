@@ -50,15 +50,24 @@ PROVIDER_BASE_URL=https://llm.tanlinh.dev/v1
 # API Key của provider
 PROVIDER_API_KEY=sk-your-api-key-here
 
+# Endpoint Modal chạy DeepSeek R1 Distill Qwen 32B
+DEEPSEEK_BASE_URL=https://linh220905--deepseek-32b-service-serve.us-east.modal.run/v1
+DEEPSEEK_MODAL_PROXY_TOKEN=wk-token-id.ws-token-secret
+
+# Mật khẩu cho nút khởi động/tắt chatbot (chỉ backend đọc)
+CHATBOT_CONTROL_PASSWORD=change-this-password
+
 # Danh sách model hiển thị ở menu chọn model (phân cách bằng dấu phẩy)
-AVAILABLE_MODELS=gpt-4o,gpt-4o-mini,deepseek-chat,deepseek-reasoner,claude-3-5-sonnet
+AVAILABLE_MODELS=deepseek-32b,ag/gemini-3.8-flash-high,gpt-4o,gpt-4o-mini,deepseek-chat,deepseek-reasoner,claude-3-5-sonnet
 
 # Model mặc định khi mở web
-DEFAULT_MODEL=gpt-4o-mini
+DEFAULT_MODEL=deepseek-32b
 
 # Cổng chạy web server
 PORT=3000
 ```
+
+Các nút điều khiển DeepSeek dùng Modal SDK trên backend. Máy chạy web cần cài Modal SDK và đăng nhập Modal (`modal setup`). Endpoint Modal được bảo vệ bằng Proxy Token; backend giữ tối thiểu một container warm khi bật, và nút tắt chờ tới khi Modal báo không còn runner nào.
 
 ### 3. Chạy server
 Chế độ sản xuất:

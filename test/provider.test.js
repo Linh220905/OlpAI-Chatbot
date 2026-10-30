@@ -1,7 +1,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { streamChatCompletion, parseSSEChunk, fetchProviderModels } from '../src/provider.js';
+import { streamChatCompletion, parseSSEChunk, fetchProviderModels, createThinkFilter } from '../src/provider.js';
 
 describe('provider module', () => {
   let mockServer;
@@ -116,5 +116,72 @@ describe('provider module', () => {
   it('fetches remote models from provider', async () => {
     const models = await fetchProviderModels(mockBaseUrl, 'test-key');
     assert.deepEqual(models, ['model-remote-1', 'model-remote-2']);
+  });
+
+  it('separates <think> tags from content into reasoning via createThinkFilter', () => {
+    const outputs = [];
+    const filter = createThinkFilter((chunk) => {
+      outputs.push(chunk);
+    });
+
+    filter({ content: '<think>I should calculate DP' });
+    filter({ content: ' table</think>Đáp án là: 42' });
+    filter.flush();
+
+    const finalContent = outputs.map(o => o.content).join('');
+    const finalReasoning = outputs.map(o => o.reasoning).join('');
+
+    assert.equal(finalContent, 'Đáp án là: 42');
+    assert.equal(finalReasoning, 'I should calculate DP table');
+  });
+
+  it('handles regular text without thinking tags in createThinkFilter', () => {
+    const outputs = [];
+    const filter = createThinkFilter((chunk) => {
+      outputs.push(chunk);
+    });
+
+    filter({ content: 'Thuật toán Dijkstra' });
+    filter.flush();
+
+    const finalContent = outputs.map(o => o.content).join('');
+    const finalReasoning = outputs.map(o => o.reasoning).join('');
+
+    assert.equal(finalContent, 'Thuật toán Dijkstra');
+    assert.equal(finalReasoning, '');
+  });
+
+  it('separates prefilled reasoning without opening <think> tag for reasoning model', () => {
+    const outputs = [];
+    const filter = createThinkFilter((chunk) => {
+      outputs.push(chunk);
+    }, { model: 'deepseek-32b' });
+
+    filter({ content: 'Okay, so I need to figure out how to respond... ' });
+    filter({ content: 'I should be concise.\n</think>\n\n' });
+    filter({ content: 'Tôi là Trợ lý AI.' });
+    filter.flush();
+
+    const finalContent = outputs.map(o => o.content).join('');
+    const finalReasoning = outputs.map(o => o.reasoning).join('');
+
+    assert.equal(finalContent, '\n\nTôi là Trợ lý AI.');
+    assert.equal(finalReasoning, 'Okay, so I need to figure out how to respond... I should be concise.\n');
+  });
+
+  it('handles rogue </think> even if not explicitly marked as reasoning model', () => {
+    const outputs = [];
+    const filter = createThinkFilter((chunk) => {
+      outputs.push(chunk);
+    });
+
+    filter({ content: 'Rogue reasoning text</think>Answer text' });
+    filter.flush();
+
+    const finalContent = outputs.map(o => o.content).join('');
+    const finalReasoning = outputs.map(o => o.reasoning).join('');
+
+    assert.equal(finalContent, 'Answer text');
+    assert.equal(finalReasoning, 'Rogue reasoning text');
   });
 });

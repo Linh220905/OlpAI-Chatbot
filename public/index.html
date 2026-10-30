@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Môi trường luyện thi OLPAi</title>
-  <meta name="description" content="Môi trường luyện thi OLPAi - Trợ lý AI chuyên luyện thi Olympic Tin học, ICPC và lập trình thi đấu.">
+  <title>DeepSeek - Môi trường luyện thi OLPAi</title>
+  <meta name="description" content="DeepSeek 32B Distill R1 Qwen - Môi trường luyện thi OLPAi và Trợ lý thông minh.">
   <meta name="theme-color" content="#ffffff">
+  <link rel="icon" type="image/png" href="/deepseek-logo.png">
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,89 +16,105 @@
   <!-- KaTeX CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/katex.min.css">
 
-  <!-- Highlight.js Theme (Atom One Dark) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css">
-
-  <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="/css/style.css">
+  <!-- DeepSeek Style CSS -->
+  <link rel="stylesheet" href="/css/style.css?v=4.1.0">
 </head>
 <body>
   <div class="app-container">
-    <!-- Sidebar -->
+    <!-- DeepSeek Left Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <a href="/" class="brand">
-          <div class="brand-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="16 18 22 12 16 6"></polyline>
-              <polyline points="8 6 2 12 8 18"></polyline>
-            </svg>
-          </div>
-          <div class="brand-title">
-            <span>OLPAi</span>
-            <span class="badge-olp">Olympic Tin Học</span>
-          </div>
-        </a>
-      </div>
-
-      <div class="sidebar-actions">
-        <button class="btn-new-chat" id="btnNewChat">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span>Đoạn chat mới</span>
-        </button>
-      </div>
-
-      <div class="sidebar-history" id="chatHistoryContainer">
-        <div class="history-section-title">Lịch sử luyện tập</div>
-        <div id="chatHistoryList">
-          <!-- Rendered via app.js -->
+        <div class="deepseek-brand" id="sidebarBrandBtn">
+          <!-- DeepSeek Blue Whale Mascot Logo -->
+          <img src="/deepseek-logo.png" alt="DeepSeek" class="deepseek-brand-img">
+          <span class="deepseek-brand-text">deepseek</span>
         </div>
-      </div>
 
-      <div class="sidebar-footer">
-        <div class="provider-info-badge">
-          <div class="status-dot" id="providerStatusDot"></div>
-          <span id="providerStatusText" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Đang kiểm tra Provider...</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Header -->
-      <header class="main-header">
-        <div class="header-left">
-          <button class="btn-icon" id="btnToggleSidebar" title="Thu gọn / Mở sidebar">
+        <div class="sidebar-header-actions">
+          <button class="btn-sidebar-icon" id="btnSearch" title="Tìm kiếm">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+
+          <button class="btn-sidebar-icon" id="btnSidebarCollapse" title="Đóng thanh bên">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
               <line x1="9" y1="3" x2="9" y2="21"></line>
             </svg>
           </button>
-          <div class="header-title-mobile">Môi trường luyện thi OLPAi</div>
+        </div>
+      </div>
 
-          <!-- Model Selector Dropdown -->
+      <!-- New Chat Button (+ Trò chuyện mới) -->
+      <div class="sidebar-new-chat-wrapper">
+        <button class="btn-deepseek-new-chat" id="btnNewChat">
+          <svg class="plus-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          <span>Trò chuyện mới</span>
+        </button>
+      </div>
+
+      <!-- History List grouped by Date/Group -->
+      <div class="sidebar-history-container" id="chatHistoryContainer">
+        <div id="chatHistoryList">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+      <!-- User Profile Row at Bottom: Green circle avatar 'D' + Dương Lĩnh + '...' -->
+      <div class="sidebar-footer">
+        <div class="deepseek-user-profile" id="userProfileBtn">
+          <div class="user-avatar-badge">D</div>
+          <div class="user-info-text">
+            <span class="user-full-name">Dương Lĩnh</span>
+          </div>
+          <button class="btn-user-more" title="Tùy chọn tài khoản" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="19" cy="12" r="1"></circle>
+              <circle cx="5" cy="12" r="1"></circle>
+            </svg>
+          </button>
+          <div class="provider-status-dot-wrapper" title="Trạng thái Provider" style="display:none;">
+            <span class="status-dot" id="providerStatusDot"></span>
+          </div>
+        </div>
+        <div id="providerStatusText" style="display:none;"></div>
+      </div>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="main-content is-welcome-view" id="mainContent">
+      <!-- Minimalist DeepSeek Top Navigation Bar -->
+      <header class="main-header">
+        <div class="header-left">
+          <button class="btn-icon" id="btnToggleSidebar" title="Mở / Đóng thanh bên">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+          </button>
+
+          <!-- Model Selector Pill Button -->
           <div class="model-selector-container">
-            <button class="model-selector-btn" id="modelSelectorBtn">
-              <svg class="model-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polygon points="12 8 8 12 12 16 16 12 12 8"></polygon>
-              </svg>
-              <span id="currentModelLabel">gpt-4o-mini</span>
+            <button class="deepseek-model-pill-btn" id="modelSelectorBtn" title="Chọn Model">
+              <span class="deepseek-model-dot"></span>
+              <span id="currentModelLabel">DeepSeek 32B Distill R1 Qwen</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </button>
 
             <div class="model-dropdown" id="modelDropdown">
-              <div class="model-dropdown-header">Chọn Model Provider</div>
-              <div id="modelOptionsList">
-                <!-- Rendered by app.js -->
-              </div>
+              <div class="model-dropdown-header">Chọn Model</div>
+              <div id="modelOptionsList"></div>
               <div class="model-custom-input-wrapper">
-                <input type="text" id="customModelInput" class="model-custom-input" placeholder="Tên model tùy chỉnh...">
+                <input type="text" id="customModelInput" class="model-custom-input" placeholder="Model ID tùy chỉnh...">
                 <button id="btnApplyCustomModel" class="btn-custom-model-apply">Dùng</button>
               </div>
             </div>
@@ -105,76 +122,155 @@
         </div>
 
         <div class="header-right">
-          <button class="btn-icon" id="btnThemeToggle" title="Chuyển chế độ Sáng / Tối">
-            <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
-          <span style="font-size:12px;color:var(--text-muted);font-weight:500;">Môi trường luyện thi OLPAi</span>
-        </div>
-      </header>
-
-      <!-- Chat Stream Container -->
-      <div class="chat-container" id="chatContainer">
-        <div class="chat-inner" id="chatInner">
-          <!-- Welcome Screen (shown when chat is empty) -->
-          <div class="welcome-screen" id="welcomeScreen">
-            <div class="welcome-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
-              <span>Competitive Programming & Algorithm Assistant</span>
+          <!-- Token Usage Progress Bar (2,000 token limit) -->
+          <div class="exam-token-bar" id="examTokenBar" title="Môi trường thi OLPAi: Tối đa 2,000 token">
+            <div class="exam-token-header">
+              <span class="exam-token-title">
+                <span class="exam-token-pulse" id="tokenPulse"></span>
+                <span>Token:</span>
+              </span>
+              <span class="exam-token-numbers"><strong id="tokenCountLabel">0</strong>/2,000</span>
+              <span class="exam-token-percent" id="tokenPercentLabel">0%</span>
             </div>
-            <h1 class="welcome-title">Môi trường luyện thi OLPAi</h1>
-            <p class="welcome-desc">
-              Phân tích thuật toán, cấu trúc dữ liệu, tối ưu độ phức tạp thời gian/bộ nhớ và mã nguồn chuẩn thi đấu Olympic Tin học.
-            </p>
-
-            <div class="quick-templates-grid" id="quickTemplatesGrid">
-              <!-- Rendered via app.js -->
+            <div class="exam-token-progress">
+              <div class="exam-token-progress-fill" id="examTokenProgressFill" style="width: 0%;"></div>
             </div>
           </div>
 
-          <!-- Chat messages are appended here -->
+          <!-- Chatbot Start / Stop Controls -->
+          <div class="chatbot-controls" aria-label="Điều khiển DeepSeek">
+            <span class="chatbot-status" id="chatbotStatus" aria-live="polite">DeepSeek chưa khởi tạo</span>
+            <button class="chatbot-control-button chatbot-start-button" id="btnStartChatbot" type="button">Khởi động</button>
+            <button class="chatbot-control-button chatbot-stop-button" id="btnStopChatbot" type="button">Tắt</button>
+          </div>
+
+          <!-- Retained Utility Buttons -->
+          <button class="btn-icon" id="btnCopyPage" title="Sao chép" style="display:none;"></button>
+          <button class="btn-icon" id="btnShareChat" title="Chia sẻ" style="display:none;"></button>
+          <button class="btn-icon" id="btnThemeToggle" title="Theme" style="display:none;"><svg id="themeIcon"></svg></button>
         </div>
+      </header>
+
+      <!-- Chatbot Password Modal Dialog -->
+      <dialog class="chatbot-control-dialog" id="chatbotControlDialog">
+        <form id="chatbotControlForm">
+          <h2 id="chatbotControlTitle">Điều khiển DeepSeek</h2>
+          <p>Nhập mật khẩu để tiếp tục.</p>
+          <input
+            id="chatbotPasswordInput"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Mật khẩu"
+            required
+          >
+          <div class="chatbot-control-error" id="chatbotControlError" role="alert"></div>
+          <div class="chatbot-dialog-actions">
+            <button class="chatbot-control-button" id="btnCancelChatbotControl" type="button">Hủy</button>
+            <button class="chatbot-control-button chatbot-start-button" id="btnConfirmChatbotControl" type="submit">Xác nhận</button>
+          </div>
+        </form>
+      </dialog>
+
+      <!-- Chat Stream Canvas -->
+      <div class="chat-container" id="chatContainer">
+        <div class="chat-inner" id="chatInner">
+          <!-- Welcome Screen (Shown when chat is empty) -->
+          <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-heading-row">
+              <img src="/deepseek-logo.png" alt="DeepSeek Mascot" class="welcome-whale-img">
+              <h1 class="welcome-title" id="welcomeGreetingTitle">Chào buổi tối, tôi có thể giúp gì cho bạn?</h1>
+            </div>
+            <div id="quickTemplatesGrid" style="display:none;"></div>
+          </div>
+
+          <!-- Messages injected via app.js -->
+        </div>
+
+        <button class="btn-scroll-bottom" id="btnScrollBottom" title="Cuộn xuống dưới">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
       </div>
 
-      <!-- Floating Input Bar -->
-      <div class="input-dock">
-        <div class="input-container">
-          <textarea
-            id="chatTextarea"
-            class="chat-textarea"
-            rows="1"
-            placeholder="Nhập bài toán, yêu cầu thuật toán hoặc dán mã nguồn cần debug (Shift + Enter để xuống dòng)..."
-          ></textarea>
-          <div class="input-toolbar">
-            <div class="input-toolbar-left">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-              <span>Định dạng 4 phần: Ý tưởng • Độ phức tạp • Mã nguồn chuẩn • Corner cases</span>
+      <!-- DeepSeek Input Dock -->
+      <div class="input-dock" id="inputDock">
+        <!-- Token Limit Banner -->
+        <div class="claude-limit-toast" id="sessionLimitBanner" style="display: none;">
+          <div class="claude-limit-toast-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="claude-limit-toast-text">
+            Tin nhắn của bạn sẽ vượt quá giới hạn 2,000 token của đoạn chat này. Hãy thử rút ngắn hoặc <button type="button" class="limit-link-btn" id="btnNewSessionBanner">bắt đầu một đoạn chat mới</button>.
+          </div>
+          <button type="button" class="claude-limit-toast-close" id="btnCloseLimitBanner" title="Đóng thông báo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- DeepSeek Input Card Box -->
+        <div class="deepseek-input-card">
+          <div class="deepseek-input-main">
+            <textarea
+              id="chatTextarea"
+              class="chat-textarea"
+              rows="2"
+              placeholder="Nhắn tin cho DeepSeek 32B Distill R1 Qwen"
+            ></textarea>
+          </div>
+
+          <div class="deepseek-input-toolbar">
+            <div class="deepseek-input-toolbar-left">
+              <!-- Suy Nghĩ Sâu Pill Button -->
+              <button class="pill-btn pill-deepthink" id="btnDeepThink" type="button" title="Chế độ Suy Nghĩ Sâu (R1 Reasoning)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Suy Nghĩ Sâu</span>
+              </button>
+
+              <!-- Tìm kiếm thông minh Pill Button -->
+              <button class="pill-btn pill-websearch" id="btnWebSearch" type="button" title="Tìm kiếm thông minh">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span>Tìm kiếm thông minh</span>
+              </button>
+
+              <!-- Current Model Badge Pill: DeepSeek 32B Distill R1 Qwen -->
+              <span class="pill-btn pill-model-name" title="Model: DeepSeek 32B Distill R1 Qwen" id="btnModelIndicator">
+                <span id="bottomModelLabel">DeepSeek 32B Distill R1 Qwen</span>
+              </span>
             </div>
-            <div class="input-toolbar-right">
+
+            <div class="deepseek-input-toolbar-right">
+              <!-- Paperclip Attach Button -->
+              <button class="btn-deepseek-attach" id="btnAttach" type="button" title="Đính kèm tệp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+              </button>
+
+              <!-- Stop Button -->
               <button class="btn-stop" id="btnStop" title="Dừng tạo phản hồi">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <rect x="4" y="4" width="16" height="16" rx="2"></rect>
                 </svg>
               </button>
-              <button class="btn-send" id="btnSend" disabled title="Gửi tin nhắn (Enter)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+
+              <!-- Circular Up-Arrow Send Button -->
+              <button class="btn-deepseek-send" id="btnSend" disabled title="Gửi tin nhắn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <line x1="12" y1="19" x2="12" y2="5"></line>
                   <polyline points="5 12 12 5 19 12"></polyline>
                 </svg>
@@ -182,10 +278,12 @@
             </div>
           </div>
         </div>
-        <div class="input-footnote">
-          Môi trường luyện thi OLPAi • Tự động đóng gói Code Card với nút Copy 1-click
-        </div>
       </div>
+
+      <!-- Floating Translate/Language Button on Right Edge (matches image) -->
+      <button class="floating-lang-btn" id="btnFloatingLang" type="button" title="Dịch thuật">
+        <span class="floating-lang-text">文A</span>
+      </button>
     </main>
   </div>
 
@@ -199,6 +297,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/katex.min.js"></script>
 
   <!-- Application Script -->
-  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/app.js?v=4.1.0"></script>
 </body>
 </html>
